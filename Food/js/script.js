@@ -230,6 +230,65 @@ window.addEventListener('DOMContentLoaded', function() {
         'menu__item',        
 
     ).render();
+
+
+    // ----- FORMS (работа с сервером) -----
+
+    const forms = document.querySelectorAll('form');
+
+    const message = {
+        loading: 'Загрузка',
+        success: 'Спасибо! Скоро мы с вами свяжемся',
+        failure: 'Что-то пошло не так...'
+    };
+
+    // Навешиваем функцию postData на все формы на странице
+    forms.forEach(item => {
+        postData(item);
+    });
+
+    function postData(form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const statusMessage = document.createElement('div');
+            statusMessage.classList.add('status');
+            statusMessage.textContent = message.loading;
+            form.append(statusMessage);
+
+            const request = new XMLHttpRequest(); // создаем объект запроса
+            request.open('POST', 'server.php'); // настройки объекта
+            request.setRequestHeader('Content-type', 'application/json'); //  хедер           
+            const formData = new FormData(form); // тип данный что будем отправлять
+
+            // передаем FormData в формате json
+            const object = {}; // создаем пустой объект
+            formData.forEach(function(value, key){ // перебираем FormData и все свойстава записываем в новый пустой объект
+                object[key] = value;
+            });
+            const json = JSON.stringify(object); // конвертируем новый объект в json
+
+            request.send(json); //отправляем
+
+            request.addEventListener('load', () => { //отслеживаем загрузку запроса
+                if (request.status === 200) {
+                    console.log(request.response);
+                    statusMessage.textContent = message.success;
+                    form.reset();
+                    setTimeout(() => {
+                        statusMessage.remove();
+                    }, 2000);                   
+                } else {
+                    statusMessage.textContent = message.failure;   
+                }
+            });
+
+        });
+    }
+
+
+
+
     
 
 });
