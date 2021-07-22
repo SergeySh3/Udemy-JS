@@ -145,90 +145,77 @@ window.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    new MenuCard(
-        "img/tabs/vegy.jpg",
-        "vegy",
-        'Меню "Фитнес"',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        10,
-        '.menu .container',
-            
+    // Функция получения с сервера данных для карточки с товаром
+    const getRecource = async (url) => {
+        const res = await fetch(url);
+        // Если не получится сделать fetch-запрос, создаем новую ошибку
+        if(!res.ok) {
+            throw new Error(`Could not fetch ${url}, status ${res.status}`);
+        }
 
-    ).render();
+        return await res.json();
+    };
 
-    new MenuCard(
-        "img/tabs/elite.jpg",
-        "elite",
-        'Меню “Премиум”',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        30,
-        '.menu .container',
-        'menu__item',        
+    // Рендер карточек товаров с данными с сервера, деструктуризация
+    getRecource('http://localhost:3000/menu')
+        .then(data => {
+            data.forEach(({img, altimg, title, descr, price}) => {
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+            });
+        });
 
-    ).render();
 
-    new MenuCard(
-        "img/tabs/post.jpg",
-        "post",
-        'Меню "Постное"',
-        'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        8,
-        '.menu .container',
-        'menu__item',        
-
-    ).render();
-
-        // -----MODAL WINDOW-----
+    // -----MODAL WINDOW-----
 
         const modalTrigger = document.querySelectorAll('[data-modal]'),
         modal = document.querySelector('.modal');
 
-  // Открытие модального окна    
-  function openModal() {
-      modal.classList.add('show');
-      modal.classList.remove('hide');
-      document.body.style.overflow = 'hidden';
-      // clearTimeout(modalTimerId);
-  }
-  
-  modalTrigger.forEach(btn => {
-      btn.addEventListener('click', openModal);
-  }); 
+    // Открытие модального окна    
+    function openModal() {
+        modal.classList.add('show');
+        modal.classList.remove('hide');
+        document.body.style.overflow = 'hidden';
+        // clearTimeout(modalTimerId);
+    }
+    
+    modalTrigger.forEach(btn => {
+        btn.addEventListener('click', openModal);
+    }); 
 
-  // Закрытие модального окна
-  function closeModal() {
-      modal.classList.remove('show');
-      modal.classList.add('hide');
-      document.body.style.overflow = '';
-  }
-  
-  
-  // Закрытие модального окна по клику по кнопке и области
-  modal.addEventListener('click', (e) => {
-      if(e.target === modal || e.target.getAttribute('data-close') == '') {
-          closeModal();    
-      }
-  });
+    // Закрытие модального окна
+    function closeModal() {
+        modal.classList.remove('show');
+        modal.classList.add('hide');
+        document.body.style.overflow = '';
+    }
+    
+    
+    // Закрытие модального окна по клику по кнопке и области
+    modal.addEventListener('click', (e) => {
+        if(e.target === modal || e.target.getAttribute('data-close') == '') {
+            closeModal();    
+        }
+    });
 
-  // Закрытие модального окна по Esc
-  document.addEventListener('keydown', (e) => {
-      if (e.code === 'Escape' && modal.classList.contains('show')) {
-          closeModal();
-      }
-  });
+    // Закрытие модального окна по Esc
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Escape' && modal.classList.contains('show')) {
+            closeModal();
+        }
+    });
 
-  // Открытие модального окна черех 5 сек
-  // const modalTimerId = setTimeout(openModal, 5000);
+    // Открытие модального окна черех 5 сек
+    // const modalTimerId = setTimeout(openModal, 5000);
 
-  // Открытие модального окна при пролистывании страницы в самый низ
-  function showModalByScroll () {
-      if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight){
-          openModal();
-          window.removeEventListener('scroll', showModalByScroll);
-      }
-  }
+    // Открытие модального окна при пролистывании страницы в самый низ
+    function showModalByScroll () {
+        if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight){
+            openModal();
+            window.removeEventListener('scroll', showModalByScroll);
+        }
+    }
 
-  window.addEventListener('scroll', showModalByScroll);
+    window.addEventListener('scroll', showModalByScroll);
 
 
     // ----- FORMS (работа с сервером) -----
@@ -242,12 +229,24 @@ window.addEventListener('DOMContentLoaded', function() {
         failure: 'Что-то пошло не так...'
     };
 
-    // Навешиваем функцию postData на все формы на странице
+    // Навешиваем функцию bindPostData на все формы на странице
     forms.forEach(item => {
-        postData(item);
+        bindPostData(item);
     });
 
-    function postData(form) {
+    // Функция postData делает запрос на сервер, получает ответ и конвертирует его в json
+    const postData = async (url, data) => {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/json'
+            },
+            body: data           
+        });
+        return await res.json();
+    };
+
+    function bindPostData(form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -264,19 +263,17 @@ window.addEventListener('DOMContentLoaded', function() {
 
             // передаем FormData в формате json
             const object = {}; // создаем пустой объект
-            formData.forEach(function(value, key){ // перебираем FormData и все свойстава записываем в новый пустой объект
-                object[key] = value;
-            });            
+
+            // СТАРЫЙ СПОСОБ
+            // formData.forEach(function(value, key){ // перебираем FormData и все свойстава записываем в новый пустой объект
+            //     object[key] = value;
+            // }); 
+            
+            // НОВЫЙ СПОСОБ
+            const json = JSON.stringify(Object.fromEntries(formData.entries()));
 
             // fetch-запрос на сервер
-            fetch('server.php', {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json'
-                },
-                body: JSON.stringify(object)
-            })
-            .then(data => data.text())
+            postData('http://localhost:3000/requests', json)
             .then(data => {
                 console.log(data);
                 showThanksModal(message.success);
@@ -316,11 +313,6 @@ window.addEventListener('DOMContentLoaded', function() {
         }, 4000);
 
 
-    }
-
-
-
-
-    
+    }    
 
 });
