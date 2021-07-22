@@ -157,12 +157,20 @@ window.addEventListener('DOMContentLoaded', function() {
     };
 
     // Рендер карточек товаров с данными с сервера, деструктуризация
-    getRecource('http://localhost:3000/menu')
-        .then(data => {
-            data.forEach(({img, altimg, title, descr, price}) => {
-                new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
-            });
+    // getRecource('http://localhost:3000/menu')
+    //     .then(data => {
+    //         data.forEach(({img, altimg, title, descr, price}) => {
+    //             new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
+    //         });
+    //     });
+
+    // Рендер карточек товаров с данными с сервера с помощью axios
+    axios.get('http://localhost:3000/menu')
+    .then(data => {
+        data.data.forEach(({img, altimg, title, descr, price}) => {
+            new MenuCard(img, altimg, title, descr, price, '.menu .container').render();
         });
+    });
 
 
     // -----MODAL WINDOW-----
@@ -313,6 +321,67 @@ window.addEventListener('DOMContentLoaded', function() {
         }, 4000);
 
 
-    }    
+    }   
+    
+    
+    // ----- СЛАЙДЕР -----
+
+    
+    const slides = document.querySelectorAll('.offer__slide');
+    const prev = document.querySelector('.offer__slider-prev');
+    const next = document.querySelector('.offer__slider-next');
+    let slideindex = 1;
+
+    const total = document.querySelector('#total');
+    const current = document.querySelector('#current');
+
+    showSlide(slideindex);
+
+    if( slides.length < 10 ) {
+        total.textContent = `0${slides.length}`;
+    } else {
+        total.textContent = slides.length;  
+    }
+
+
+    function showSlide(n) {           
+        if( n > slides.length ) {
+            slideindex = 1;
+        }
+        if( n < 1) {
+            slideindex = slides.length;
+        }
+        slides.forEach(item => item.style.display = 'none');
+        slides[slideindex - 1].style.display = 'block';  
+        
+        if( slides.length < 10 ) {
+            current.textContent = `0${slideindex}`;
+        } else {
+            current.textContent = slideindex;  
+        }
+    }
+
+    function slidePlus(n) {
+        showSlide(slideindex += n);
+    }
+
+    prev.addEventListener('click', () => {
+        slidePlus(-1);
+    });
+
+    next.addEventListener('click', () => {
+        slidePlus(1);
+    });
+
+    
+
+
+
+
+
+
+
+
+
 
 });
