@@ -377,13 +377,18 @@ window.addEventListener('DOMContentLoaded', function() {
         dots.push(dot);
     }
 
+    //обрезаем px с конца строки регулярным выражением (500)
+    function deleteNotDigits(str) {
+        return str.replace(/\D/g, '');
+    }
+
 
     next.addEventListener('click', () => {
-        if(offset == (+width.slice(0, width.length - 2) * (slides.length - 1))) { // случай когда долистываем до последнего слайда
-                        //обрезаем px с конца строки (500) х 4(слайда) - 1
+        if(offset == deleteNotDigits(width) * (slides.length - 1)) { // случай когда долистываем до последнего слайда
+                        //обрезаем px с конца строки регулярным выражением (500) х 4(слайда) - 1
             offset = 0;// прыгаем на первый
         } else {
-            offset += +width.slice(0, width.length - 2); //прыгаем на +ширину слайда
+            offset += deleteNotDigits(width); //прыгаем на +ширину слайда
         }        
         slidesField.style.transform = `translateX(-${offset}px)`;//прыгаем на +ширину слайда
 
@@ -406,9 +411,9 @@ window.addEventListener('DOMContentLoaded', function() {
 
     prev.addEventListener('click', () => {
         if( offset == 0 ){  // случай когда стоит первый слайд          
-            offset = +width.slice(0, width.length - 2) * (slides.length - 1); // прыгаем в конец
+            offset = deleteNotDigits(width) * (slides.length - 1); // прыгаем в конец
         } else {
-            offset -= +width.slice(0, width.length - 2);//прыгаем на -ширину слайда
+            offset -= deleteNotDigits(width);//прыгаем на -ширину слайда
         }
 
         slidesField.style.transform = `translateX(-${offset}px)`;//прыгаем на -ширину слайда
@@ -434,7 +439,7 @@ window.addEventListener('DOMContentLoaded', function() {
         dot.addEventListener('click', (e) => {
             const slideTo = e.target.getAttribute('data-slide-to');
             slideindex = slideTo;
-            offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+            offset = deleteNotDigits(width) * (slideTo - 1);
             slidesField.style.transform = `translateX(-${offset}px)`;
             if(slides.length < 10) {
                 current.textContent = `0${slideindex}`;
