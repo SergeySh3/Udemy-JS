@@ -496,9 +496,41 @@ window.addEventListener('DOMContentLoaded', function() {
     // ---- КАЛЬКУЛЯТОР КАЛОРИЙ -----
 
     const result = document.querySelector('.calculating__result span');
-    let sex = 'female',
-        height, weight, age,
+
+    let sex, height, weight, age, ratio;
+
+    // сохранение выбранных значений в localStorage и значения по умолчанию
+    if(localStorage.getItem('sex')) {
+        sex = localStorage.getItem('sex');
+    } else {
+        sex = 'female';
+        localStorage.setItem('sex', 'female');
+    }
+
+    if(localStorage.getItem('ratio')) {
+        ratio = localStorage.getItem('ratio');
+    } else {
         ratio = 1.375;
+        localStorage.setItem('ratio', 1.375);
+    }
+
+    //делаем активными элементы соответсвующие данным из localStorage
+    function initLocalSettings (selector, activeClass) {
+        const elements = document.querySelectorAll(selector);
+
+        elements.forEach(elem => {
+            elem.classList.remove(activeClass);
+            if (elem.getAttribute('id') == localStorage.getItem('sex')) {
+                elem.classList.add(activeClass);
+            }
+            if(elem.getAttribute('data-ratio') == localStorage.getItem('ratio')) {
+                elem.classList.add(activeClass);   
+            }
+        });
+    }
+
+    initLocalSettings('#gender div', 'calculating__choose-item_active');
+    initLocalSettings('.calculating__choose_big div', 'calculating__choose-item_active');
 
     // основная функция с формулой подсчета
     function calcTotal() {
@@ -518,16 +550,18 @@ window.addEventListener('DOMContentLoaded', function() {
     calcTotal();
 
     // функция по собиранию статичных данных (пол и коэфициент активности(1 и 3 блок)) 
-    function getStaticInformation (parentSelector, activeClass){
-        const elements = document.querySelectorAll(`${parentSelector} div`);
+    function getStaticInformation (selector, activeClass){
+        const elements = document.querySelectorAll(selector);
 
         // вешаем обработчик, используем делегирование
         elements.forEach(elem => {
             elem.addEventListener('click', (e) => {
                 if(e.target.getAttribute('data-ratio')) {
                     ratio = +e.target.getAttribute('data-ratio'); // записываем в ratio для формулы данные из дата-атрибута
+                    localStorage.setItem('ratio', +e.target.getAttribute('data-ratio'));
                 } else { // если нет дата-атрибута data-ratio, значит это пол. Записываем в sex id из e.target
                     sex = e.target.getAttribute('id');
+                    localStorage.setItem('sex', e.target.getAttribute('id'));
                 }
     
                 //добавляем .класс активности
@@ -543,8 +577,8 @@ window.addEventListener('DOMContentLoaded', function() {
         });        
     }
 
-    getStaticInformation('#gender', 'calculating__choose-item_active');
-    getStaticInformation('.calculating__choose_big', 'calculating__choose-item_active');
+    getStaticInformation('#gender div', 'calculating__choose-item_active');
+    getStaticInformation('.calculating__choose_big div', 'calculating__choose-item_active');
 
     
     // функция по собиранию динамических данных (вес, рост, возраст)
@@ -552,6 +586,13 @@ window.addEventListener('DOMContentLoaded', function() {
         const input = document.querySelector(selector);
         //вешаем обработчик на каждый инпут
         input.addEventListener('input', () => {
+
+            if(input.value.match(/\D/g)) {
+                input.style.border = '1px solid red';
+            }   else {
+                input.style.border = 'none';
+            }
+
             switch(input.getAttribute('id')) {
                 case 'height':
                     height = +input.value;
