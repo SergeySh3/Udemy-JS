@@ -379,17 +379,34 @@ window.addEventListener('DOMContentLoaded', function() {
 
     //обрезаем px с конца строки регулярным выражением (500)
     function deleteNotDigits(str) {
-        return str.replace(/\D/g, '');
+        return str.replace(/[^\d.]/g, ''); 
+    }
+
+    //показываем с нулём текущий слад
+    function showNumberCurrentSlide() {
+        if(slides.length < 10) {
+            current.textContent = `0${slideindex}`;
+        } else {
+            current.textContent = slideindex; 
+        }    
+    }
+
+    // меняем прозрачность активной точки
+    function changeOpacityDots() {
+        dots.forEach(dot => dot.style.opacity = '.5');
+        dots[slideindex-1].style.opacity = 1;
     }
 
 
+
     next.addEventListener('click', () => {
-        if(offset == deleteNotDigits(width) * (slides.length - 1)) { // случай когда долистываем до последнего слайда
+        if(offset == (deleteNotDigits(width) * (slides.length - 1))) { // случай когда долистываем до последнего слайда
                         //обрезаем px с конца строки регулярным выражением (500) х 4(слайда) - 1
             offset = 0;// прыгаем на первый
         } else {
             offset += deleteNotDigits(width); //прыгаем на +ширину слайда
-        }        
+        }    
+
         slidesField.style.transform = `translateX(-${offset}px)`;//прыгаем на +ширину слайда
 
         if(slideindex == slides.length) {
@@ -398,14 +415,8 @@ window.addEventListener('DOMContentLoaded', function() {
             slideindex++; //прибавляем индекс
         }
 
-        if(slides.length < 10) {
-            current.textContent = `0${slideindex}`;
-        } else {
-            current.textContent = slideindex; 
-        }
-
-        dots.forEach(dot => dot.style.opacity = '.5');
-        dots[slideindex-1].style.opacity = 1;
+        showNumberCurrentSlide();
+        changeOpacityDots();
 
     });
 
@@ -424,14 +435,8 @@ window.addEventListener('DOMContentLoaded', function() {
             slideindex--;//вычитаем индекс
         }
 
-        if(slides.length < 10) {
-            current.textContent = `0${slideindex}`;
-        } else {
-            current.textContent = slideindex; 
-        }
-
-        dots.forEach(dot => dot.style.opacity = '.5');
-        dots[slideindex-1].style.opacity = 1;
+        showNumberCurrentSlide();
+        changeOpacityDots();
         
     });
     // клики по точкам в слайдере (навигация)
@@ -441,16 +446,10 @@ window.addEventListener('DOMContentLoaded', function() {
             slideindex = slideTo;
             offset = deleteNotDigits(width) * (slideTo - 1);
             slidesField.style.transform = `translateX(-${offset}px)`;
-            if(slides.length < 10) {
-                current.textContent = `0${slideindex}`;
-            } else {
-                current.textContent = slideindex; 
-            }
-            dots.forEach(dot => dot.style.opacity = '.5');
-            dots[slideindex-1].style.opacity = 1;
+            showNumberCurrentSlide();
+            changeOpacityDots();
         });
     });
-
 
     // ---- ПЕРВЫЙ ВАРИАНТ -----
 
