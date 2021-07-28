@@ -479,7 +479,7 @@ function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCo
 
     //обрезаем px с конца строки регулярным выражением (500)
     function deleteNotDigits(str) {
-        return str.replace(/[^\d.]/g, ''); 
+        return +str.replace(/[^\d.]/g, ''); 
     }
 
     //показываем с нулём текущий слад
