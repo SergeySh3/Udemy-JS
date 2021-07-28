@@ -1,3 +1,5 @@
+import {getRecource} from '../services/services';
+
 function cards() {
 
     // -----MUNU OF DAY (Classes)-----
@@ -43,16 +45,7 @@ function cards() {
         }
     }
 
-    // Функция получения с сервера данных для карточки с товаром
-    const getRecource = async (url) => {
-        const res = await fetch(url);
-        // Если не получится сделать fetch-запрос, создаем новую ошибку
-        if(!res.ok) {
-            throw new Error(`Could not fetch ${url}, status ${res.status}`);
-        }
 
-        return await res.json();
-    };
 
     // Рендер карточек товаров с данными с сервера, деструктуризация
     // getRecource('http://localhost:3000/menu')
@@ -72,4 +65,4 @@ function cards() {
 
 }
 
-module.exports = cards;
+export default cards;

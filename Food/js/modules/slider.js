@@ -1,15 +1,15 @@
-function slider() {
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}) {
 
     // ----- SLIDER -----
 
-    const slides = document.querySelectorAll('.offer__slide'),
-          slider = document.querySelector('.offer__slider'),
-          prev = document.querySelector('.offer__slider-prev'),
-          next = document.querySelector('.offer__slider-next'),
-          total = document.querySelector('#total'),
-          current = document.querySelector('#current'),
-          slidesWrapper = document.querySelector('.offer__slider-wrapper'),
-          slidesField = document.querySelector('.offer__slider-inner'),
+    const slides = document.querySelectorAll(slide),
+          slider = document.querySelector(container),
+          prev = document.querySelector(prevArrow),
+          next = document.querySelector(nextArrow),
+          total = document.querySelector(totalCounter),
+          current = document.querySelector(currentCounter),
+          slidesWrapper = document.querySelector(wrapper),
+          slidesField = document.querySelector(field),
           width = window.getComputedStyle(slidesWrapper).width;
 
     let slideindex = 1;
@@ -77,16 +77,16 @@ function slider() {
     }
 
     next.addEventListener('click', () => {
-        if(offset == (deleteNotDigits(width) * (slides.length - 1))) { // случай когда долистываем до последнего слайда
+        if (offset == (deleteNotDigits(width) * (slides.length - 1))) { // случай когда долистываем до последнего слайда
                         //обрезаем px с конца строки регулярным выражением (500) х 4(слайда) - 1
             offset = 0;// прыгаем на первый
         } else {
-            offset += deleteNotDigits(width); //прыгаем на +ширину слайда
+            offset += deleteNotDigits(width);  //прыгаем на +ширину слайда
         }    
 
         slidesField.style.transform = `translateX(-${offset}px)`;//прыгаем на +ширину слайда
 
-        if(slideindex == slides.length) {
+        if (slideindex == slides.length) {
             slideindex = 1; //прыгаем на первый
         } else {
             slideindex++; //прибавляем индекс
@@ -171,4 +171,4 @@ function slider() {
 
 }
 
-module.exports = slider;
+export default slider;

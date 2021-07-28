@@ -1,8 +1,6 @@
-function timer() {
+function timer(id, deadline) {
 
     // -----TIMER-----
-
-    const deadline = '2021-10-16';
 
     //Функция возвращает объект с разницей между текущей датой и дедлайном
     function getTimeRemaining (endtime) {
@@ -55,7 +53,7 @@ function timer() {
         }            
     }     
 
-    setClock('.timer', deadline);
+    setClock(id, deadline);
 }
 
-module.exports = timer;
+export default timer;
